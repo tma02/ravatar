@@ -1,0 +1,9 @@
+body {
+  background-color: #000;
+  text-align: center;
+}
+
+#ravatar-canvas {
+  width: 512px;
+  height: 512px;
+}
