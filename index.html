@@ -3,6 +3,7 @@
 <head>
   <title>Ravatar</title>
   <link rel="stylesheet" type="text/css" href="./index.css">
+  <link id="favicon" rel="icon" type="image/png">
 </head>
 <body>
   <div>
@@ -12,24 +13,29 @@
   <input type="text" id="seed" placeholder="Seed">
   <button id="generate">Generate with seed</button>
   <button id="generate-random">Generate random</button>
-<script type="text/javascript" src="./index.js"></script>
-<script type="text/javascript">
-  let seed = new Date().getTime().toString();
-  let seedInputElement = document.getElementById('seed');
-  seedInputElement.value = seed;
-  Ravatar.render(document.getElementById('ravatar-canvas'), Ravatar.generate(seed));
-
-  let generateButtonElement = document.getElementById('generate');
-  generateButtonElement.onclick = () => {
-    Ravatar.render(document.getElementById('ravatar-canvas'), Ravatar.generate(seedInputElement.value));
-  };
-
-  let generateRandomButtonElement = document.getElementById('generate-random');
-  generateRandomButtonElement.onclick = () => {
-    seed = new Date().getTime().toString();
+  <script type="text/javascript" src="./index.js"></script>
+  <script type="text/javascript">
+    let favicon = document.getElementById('favicon');
+    let seed = new Date().getTime().toString();
+    let seedInputElement = document.getElementById('seed');
+    let canvas = document.getElementById('ravatar-canvas');
     seedInputElement.value = seed;
-    Ravatar.render(document.getElementById('ravatar-canvas'), Ravatar.generate(seedInputElement.value));
-  };
-</script>
+    Ravatar.render(canvas, Ravatar.generate(seed));
+    favicon.href = canvas.toDataURL('image/png');
+
+    let generateButtonElement = document.getElementById('generate');
+    generateButtonElement.onclick = () => {
+      Ravatar.render(canvas, Ravatar.generate(seedInputElement.value));
+      favicon.href = canvas.toDataURL('image/png');
+    };
+
+    let generateRandomButtonElement = document.getElementById('generate-random');
+    generateRandomButtonElement.onclick = () => {
+      seed = new Date().getTime().toString();
+      seedInputElement.value = seed;
+      Ravatar.render(canvas, Ravatar.generate(seedInputElement.value));
+      favicon.href = canvas.toDataURL('image/png');
+    };
+  </script>
 </body>
 </html>
