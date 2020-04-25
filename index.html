@@ -10,7 +10,8 @@
     </canvas>
   </div>
   <input type="text" id="seed" placeholder="Seed">
-  <button id="generate">Generate</button>
+  <button id="generate">Generate with seed</button>
+  <button id="generate-random">Generate random</button>
 <script type="text/javascript" src="./index.js"></script>
 <script type="text/javascript">
   let seed = new Date().getTime().toString();
@@ -20,6 +21,13 @@
 
   let generateButtonElement = document.getElementById('generate');
   generateButtonElement.onclick = () => {
+    Ravatar.render(document.getElementById('ravatar-canvas'), Ravatar.generate(seedInputElement.value));
+  };
+
+  let generateRandomButtonElement = document.getElementById('generate-random');
+  generateRandomButtonElement.onclick = () => {
+    seed = new Date().getTime().toString();
+    seedInputElement.value = seed;
     Ravatar.render(document.getElementById('ravatar-canvas'), Ravatar.generate(seedInputElement.value));
   };
 </script>
