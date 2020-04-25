@@ -126,6 +126,7 @@ Ravatar.generate = function(seedStr) {
   
   // Generate properties of the avatar
   let avatarProps = { };
+  avatarProps.rounded = false;
   avatarProps.isVertical = randFunc() >= 0.5; // 50/50
   avatarProps.rows = [];
   for (var i = 0; i < 3; i++) {
@@ -167,39 +168,52 @@ Ravatar.render = function(canvasElement, avatarProps) {
   canvasElement.width = 512;
   canvasElement.height = 512;
   let context = canvasElement.getContext('2d');
+
+  // Calculate some stuff
+  const padding = canvasElement.width / 6; // 1/6 of each side is padding totalling 1/3 of the canvas width
+  let length = 4 * (canvasElement.width / 6); // 4/6 or 2/3 of the area is for the glyph
+  // Take the length and divide into 3 sections since 3 lines
+  // A quarter of each trine is for margin,
+  // but since the margin on the last line is not needed, add that back to the other two margins using *(3/2)
+  const margin = (3 / 2) * (length / 3 / 4);
+  const width = length / 4;
+  // When there's a line and a space on the same row, the length of the line is different
+  // Use (2/3) as a base then subtract half the length of the margin that would be included
+  const halfLineLength = length * (2/3) - ((1/2) * (length / 3 / 4));
   
   // Render the background gradient
   let backgroundGradient = context.createLinearGradient(0, canvasElement.width, canvasElement.width, 0);
   backgroundGradient.addColorStop(0, 'rgb(0, 0, 0)');
   backgroundGradient.addColorStop(1, 'rgb(42, 42, 42)');
   context.fillStyle = backgroundGradient;
-  context.fillRect(0, 0, canvasElement.width, canvasElement.width);
-  
+  if (avatarProps.rounded) {
+    roundRect(context, 0, 0, canvasElement.width, canvasElement.width, width / 2).fill();
+  }
+  else {
+    context.fillRect(0, 0, canvasElement.width, canvasElement.width);
+  }
+
   if (avatarProps.isVertical) {
+    // Rotate -90deg by vertically skewing up and horizontally skewing right
+    // Since the entire transform is now perfectly off the canvas, bring it back on by translating 512 down
     context.setTransform(0, -1, 1, 0, 0, 512);
   }
 
-  const padding = canvasElement.width / 6;
-  let length = 4 * (canvasElement.width / 6);
-  const margin = (3 / 2) * (length / 3 / 4);
-  let width = length / 4;
-  const halfLineLength = length * (2/3) - ((1/2) * (length / 3 / 4));
-
-  let darkLayerGradient = context.createLinearGradient(0, 0, length, 0);
+  let darkLayerGradient = context.createLinearGradient(padding, 0, length + padding, 0);
   darkLayerGradient.addColorStop(0, avatarProps.gradientSet.bgLow);
   darkLayerGradient.addColorStop(1, avatarProps.gradientSet.bgHigh);
 
-  let lightLayerGradient = context.createLinearGradient(0, 0, length, 0);
+  let lightLayerGradient = context.createLinearGradient(padding, 0, length + padding, 0);
   lightLayerGradient.addColorStop(0, avatarProps.gradientSet.low);
   lightLayerGradient.addColorStop(1, avatarProps.gradientSet.high);
 
+  // Keep track of the node for coloring
   let currentNode = 0;
 
-  // Render the actual avatar
+  // Render the rows of the actual avatar
   for (var i = 0; i < 3; i++) {
     let startX = padding;
     let startY = padding + ((width + margin) * i);
-    // draw the background first
     switch (avatarProps.rows[i].type) {
       case 'LINE':
         context.fillStyle = '#f0f0f0';
