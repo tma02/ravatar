@@ -6,36 +6,58 @@
   <link id="favicon" rel="icon" type="image/png">
 </head>
 <body>
-  <div>
-    <canvas id="ravatar-canvas">
-    </canvas>
+  <div class="container">
+    <h1>Ravatar</h1>
+    <p>
+      An <a href="https://en.wikipedia.org/wiki/Identicon">identicon</a> implementation. Find me on <a href="https://github.com/tma02/ravatar">GitHub</a>.
+    </p>
+    <div class="canvas-container">
+      <canvas id="ravatar-canvas">
+      </canvas>
+    </div>
+
+    <input type="text" id="seed" placeholder="Enter some text here">
+    <button id="generate-random">Generate random</button>
+    <h3>Options</h3>
+    <input type="checkbox" class="option" id="dark" checked="true"> Dark colorway<br>
+    <input type="checkbox" class="option" id="hasBg" checked="true"> Has background<br>
+    <input type="checkbox" class="option" id="roundedBg" checked="true"> Rounded background<br>
   </div>
-  <input type="text" id="seed" placeholder="Seed">
-  <button id="generate">Generate with seed</button>
-  <button id="generate-random">Generate random</button>
   <script type="text/javascript" src="./index.js"></script>
   <script type="text/javascript">
     let favicon = document.getElementById('favicon');
     let seed = new Date().getTime().toString();
     let seedInputElement = document.getElementById('seed');
     let canvas = document.getElementById('ravatar-canvas');
-    seedInputElement.value = seed;
-    Ravatar.render(canvas, Ravatar.generate(seed));
-    favicon.href = canvas.toDataURL('image/png');
 
-    let generateButtonElement = document.getElementById('generate');
-    generateButtonElement.onclick = () => {
-      Ravatar.render(canvas, Ravatar.generate(seedInputElement.value));
+    let darkInput = document.getElementById('dark');
+    let hasBgInput = document.getElementById('hasBg');
+    let roundedBgInput = document.getElementById('roundedBg');
+
+    function render() {
+      let props = Ravatar.generate(seedInputElement.value);
+      props.dark = darkInput.checked;
+      props.hasBg = hasBgInput.checked;
+      props.roundedBg = roundedBgInput.checked;
+      Ravatar.render(canvas, props);
       favicon.href = canvas.toDataURL('image/png');
-    };
+    }
+
+    seedInputElement.value = seed;
+    render();
 
     let generateRandomButtonElement = document.getElementById('generate-random');
     generateRandomButtonElement.onclick = () => {
       seed = new Date().getTime().toString();
       seedInputElement.value = seed;
-      Ravatar.render(canvas, Ravatar.generate(seedInputElement.value));
-      favicon.href = canvas.toDataURL('image/png');
+      render();
     };
+
+    seedInputElement.oninput = render;
+
+    document.querySelectorAll('.option').forEach((e) => {
+      e.onchange = render;
+    });
   </script>
 </body>
 </html>

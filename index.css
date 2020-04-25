@@ -1,9 +1,41 @@
 body {
-  background-color: #000;
+  background-color: #1a1a1a;
+  font-size: 16px;
+  color: #f0f0f0;
+  font-family: sans-serif;
+}
+
+.container {
   text-align: center;
+  width: 512px;
+  margin: auto;
+}
+
+.canvas-container {
+  margin-bottom: 1rem;
 }
 
 #ravatar-canvas {
   width: 512px;
   height: 512px;
+}
+
+button {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  border-radius: 32px;
+  border: none;
+  outline-style: none;
+}
+
+a {
+  color: #69e6ff!important;
+}
+
+input[type="text"] {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  border-radius: 32px;
+  border: none;
+  outline-style: none;
 }

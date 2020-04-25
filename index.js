@@ -77,43 +77,50 @@ const GRADIENT_SETS = [
   {
     low: '#716bda',
     high: '#69e6ff',
-    bgLow: '#1a1832',
-    bgHigh: '#152742'
+    bgLow: 'rgba(113, 107, 218, 0.2)',
+    bgHigh: 'rgba(105, 230, 255, 0.2)'
   },
   // light green
   {
     low: '#65bb61',
     high: '#b8fab6',
-    bgLow: '#1d221d',
-    bgHigh: '#092808'
+    bgLow: 'rgba(101, 187, 97, 0.2)',
+    bgHigh: 'rgba(184, 250, 182, 0.2)'
   },
   // gold
   {
     low: '#bbae61',
     high: '#faf7b6',
-    bgLow: '#252213',
-    bgHigh: '#3c3a2a'
+    bgLow: 'rgba(187, 174, 97, 0.2)',
+    bgHigh: 'rgba(250, 247, 182, 0.2)'
   },
   // red
   {
     low: '#862525',
     high: '#e94f4f',
-    bgLow: '#331010',
-    bgHigh: '#382d2d'
+    bgLow: 'rgba(134, 37, 37, 0.2)',
+    bgHigh: 'rgba(233, 79, 79, 0.2)'
   },
   // purple
   {
     low: '#7253a1',
     high: '#9989b8',
-    bgLow: '#1f172a',
-    bgHigh: '#332d40'
+    bgLow: 'rgba(114, 83, 161, 0.2)',
+    bgHigh: 'rgba(153, 137, 184, 0.2)'
   },
   // lime
   {
     low: '#b6cd3c',
-    high: '#f0fac6',
-    bgLow: '#1e210c',
-    bgHigh: '#373c27'
+    high: '#d5f259',
+    bgLow: 'rgba(182, 205, 60, 0.2)',
+    bgHigh: 'rgba(213, 242, 89, 0.2)'
+  },
+  // "rose gold"
+  {
+    low: '#9e7c5d',
+    high: '#e7b09c',
+    bgLow: 'rgba(158, 124, 93, 0.2)',
+    bgHigh: 'rgba(231, 176, 156, 0.2)'
   }
 ];
 
@@ -126,7 +133,9 @@ Ravatar.generate = function(seedStr) {
   
   // Generate properties of the avatar
   let avatarProps = { };
-  avatarProps.rounded = false;
+  avatarProps.roundedBg = true;
+  avatarProps.hasBg = true;
+  avatarProps.dark = true;
   avatarProps.isVertical = randFunc() >= 0.5; // 50/50
   avatarProps.rows = [];
   for (var i = 0; i < 3; i++) {
@@ -165,6 +174,18 @@ Ravatar.render = function(canvasElement, avatarProps) {
     return context;
   }
 
+  function getFillStyle(currentNode, avatarProps) {
+    if (avatarProps.coloredNodes[currentNode]) {
+      return lightLayerGradient;
+    }
+    else if (avatarProps.dark) {
+      return '#f0f0f0';
+    }
+    else {
+      return '#a0a0a0';
+    }
+  }
+
   canvasElement.width = 512;
   canvasElement.height = 512;
   let context = canvasElement.getContext('2d');
@@ -182,15 +203,23 @@ Ravatar.render = function(canvasElement, avatarProps) {
   const halfLineLength = length * (2/3) - ((1/2) * (length / 3 / 4));
   
   // Render the background gradient
-  let backgroundGradient = context.createLinearGradient(0, canvasElement.width, canvasElement.width, 0);
-  backgroundGradient.addColorStop(0, 'rgb(0, 0, 0)');
-  backgroundGradient.addColorStop(1, 'rgb(42, 42, 42)');
-  context.fillStyle = backgroundGradient;
-  if (avatarProps.rounded) {
-    roundRect(context, 0, 0, canvasElement.width, canvasElement.width, width / 2).fill();
-  }
-  else {
-    context.fillRect(0, 0, canvasElement.width, canvasElement.width);
+  if (avatarProps.hasBg) {
+    let backgroundGradient = context.createLinearGradient(0, canvasElement.width, canvasElement.width, 0);
+    if (avatarProps.dark) {
+      backgroundGradient.addColorStop(0, 'rgb(0, 0, 0)');
+      backgroundGradient.addColorStop(1, 'rgb(42, 42, 42)');
+    }
+    else {
+      backgroundGradient.addColorStop(0, 'rgb(213, 213, 213)');
+      backgroundGradient.addColorStop(1, 'rgb(255, 255, 255)');
+    }
+    context.fillStyle = backgroundGradient;
+    if (avatarProps.roundedBg) {
+      roundRect(context, 0, 0, canvasElement.width, canvasElement.width, width / 2).fill();
+    }
+    else {
+      context.fillRect(0, 0, canvasElement.width, canvasElement.width);
+    }
   }
 
   if (avatarProps.isVertical) {
@@ -216,10 +245,7 @@ Ravatar.render = function(canvasElement, avatarProps) {
     let startY = padding + ((width + margin) * i);
     switch (avatarProps.rows[i].type) {
       case 'LINE':
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, length, width, width / 2);
         context.fill();
         break;
@@ -228,19 +254,13 @@ Ravatar.render = function(canvasElement, avatarProps) {
         roundRect(context, startX, startY, length, width, width / 2);
         context.fill();
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, halfLineLength, width, width / 2);
         context.fill();
 
         startX += halfLineLength + margin;
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
         break;
@@ -249,19 +269,13 @@ Ravatar.render = function(canvasElement, avatarProps) {
         roundRect(context, startX, startY, length, width, width / 2);
         context.fill();
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
 
         startX += width + margin;
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, halfLineLength, width, width / 2);
         context.fill();
         break;
@@ -270,28 +284,19 @@ Ravatar.render = function(canvasElement, avatarProps) {
         roundRect(context, startX, startY, length, width, width / 2);
         context.fill();
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
 
         startX += width + margin;
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
 
         startX += width + margin;
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
         break;
@@ -300,19 +305,13 @@ Ravatar.render = function(canvasElement, avatarProps) {
         roundRect(context, startX, startY, length, width, width / 2);
         context.fill();
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
 
         startX += 2 * (width + margin);
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
         break;
@@ -321,19 +320,13 @@ Ravatar.render = function(canvasElement, avatarProps) {
         roundRect(context, startX, startY, halfLineLength, width, width / 2);
         context.fill();
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
 
         startX += width + margin;
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
         break;
@@ -344,37 +337,25 @@ Ravatar.render = function(canvasElement, avatarProps) {
         roundRect(context, startX, startY, halfLineLength, width, width / 2);
         context.fill();
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
 
         startX += width + margin;
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, width, width, width / 2);
         context.fill();
         break;
       case 'SPACE_LINE':
         startX += width + margin;
 
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, halfLineLength, width, width / 2);
         context.fill();
         break;
       case 'LINE_SPACE':
-        context.fillStyle = '#f0f0f0';
-        if (avatarProps.coloredNodes[currentNode++]) {
-          context.fillStyle = lightLayerGradient;
-        }
+        context.fillStyle = getFillStyle(currentNode++, avatarProps);
         roundRect(context, startX, startY, halfLineLength, width, width / 2);
         context.fill();
         break;
