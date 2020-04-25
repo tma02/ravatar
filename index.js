@@ -82,15 +82,15 @@ const GRADIENT_SETS = [
   },
   // light green
   {
-    low: '#65bb61',
-    high: '#b8fab6',
+    low: '#50e24c',
+    high: '#80d57c',
     bgLow: 'rgba(101, 187, 97, 0.2)',
-    bgHigh: 'rgba(184, 250, 182, 0.2)'
+    bgHigh: 'rgba(80, 226, 76, 0.2)'
   },
   // gold
   {
-    low: '#bbae61',
-    high: '#faf7b6',
+    low: '#908542',
+    high: '#e4df64',
     bgLow: 'rgba(187, 174, 97, 0.2)',
     bgHigh: 'rgba(250, 247, 182, 0.2)'
   },
