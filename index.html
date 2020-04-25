@@ -39,7 +39,7 @@
       props.dark = darkInput.checked;
       props.hasBg = hasBgInput.checked;
       props.roundedBg = roundedBgInput.checked;
-      Ravatar.render(canvas, props);
+      Ravatar.render(canvas, props, 512);
       favicon.href = canvas.toDataURL('image/png');
     }
 

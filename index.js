@@ -159,7 +159,7 @@ Ravatar.generate = function(seedStr) {
   return avatarProps;
 };
 
-Ravatar.render = function(canvasElement, avatarProps) {
+Ravatar.render = function(canvasElement, avatarProps, size) {
   // https://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas/7838871#7838871
   function roundRect(context, x, y, w, h, r) {
     if (w < 2 * r) r = w / 2;
@@ -186,8 +186,8 @@ Ravatar.render = function(canvasElement, avatarProps) {
     }
   }
 
-  canvasElement.width = 512;
-  canvasElement.height = 512;
+  canvasElement.width = size;
+  canvasElement.height = size;
   let context = canvasElement.getContext('2d');
 
   // Calculate some stuff
@@ -225,7 +225,7 @@ Ravatar.render = function(canvasElement, avatarProps) {
   if (avatarProps.isVertical) {
     // Rotate -90deg by vertically skewing up and horizontally skewing right
     // Since the entire transform is now perfectly off the canvas, bring it back on by translating 512 down
-    context.setTransform(0, -1, 1, 0, 0, 512);
+    context.setTransform(0, -1, 1, 0, 0, canvasElement.width);
   }
 
   let darkLayerGradient = context.createLinearGradient(padding, 0, length + padding, 0);
